@@ -11,7 +11,8 @@ defmodule WatchdogBot.Application do
       # Starts a worker by calling: WatchdogBot.Worker.start_link(arg)
       # {WatchdogBot.Worker, arg}
       ExGram, # This will setup the Registry.ExGram
-      {WatchdogBot.Bot, [method: :polling, token: token]}
+      {WatchdogBot.Bot, [method: :polling, token: token]}, # Setup Telegram bot
+      {Main.Repo, []} # Setup main Postgres database
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
