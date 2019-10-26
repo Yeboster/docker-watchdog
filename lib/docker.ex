@@ -42,14 +42,11 @@ defmodule Docker do
       |> Enum.filter(str_not_empty?)
 
     # Using stream since it's lazy
-    matrix =
-      Stream.map(lines, fn line ->
-        String.split(line, "  ")
-        |> Enum.filter(str_not_empty?)
-      end)
-
-    matrix
-    |> Enum.map(fn row -> scrape_ps(row) end)
+    Stream.map(lines, fn line ->
+      String.split(line, "  ")
+      |> Enum.filter(str_not_empty?)
+    end)
+    |> Enum.map(&scrape_ps/1)
   end
 
   @doc """
