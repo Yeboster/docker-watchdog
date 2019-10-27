@@ -80,13 +80,32 @@ defmodule Docker do
   @doc """
   Scrape docker stat command calling it into the shell
   """
+  @spec scrape_stats() :: [%{key: String.t()}]
   def scrape_stats() do
     {output, 0} = cmd_docker(["stats", "--no-stream"])
 
     scrape_stats(output)
   end
 
-  def scrape_ip_addr(container_id) do
+  def scrape_ip_addr(network_json) when is_map(network_json) do
+    Map.to_list(network_json)
+    |> Enum.map(fn {key, value} -> %{key => "#{value["IPAddress"]}/#{value["IPPrefixLen"]}"} end)
+  end
+
+  def scrape_ip_addr(container_id) when is_bitstring(container_id) do
+    sanitized = String.replace(container_id, Regex.compile!("[^a-z|A-Z|_]"), "")
+
+    {output, 0} = cmd_docker(["inspect", "-f", "'{{json .NetworkSettings.Networks}}'", sanitized])
+
+    Jason.decode!(output)
+  end
+
+  @doc """
+  Scrape each conainer id and return its Ip address and subnet mask
+  """
+  @spec scrape_ip_addr([String.t()]) :: [%{key: String.t()}]
+  def scrape_ip_addr(container_ids) when is_list(container_ids) do
+    Enum.map(container_ids, fn id -> scrape_ip_addr(id) end)
   end
 
   @spec lists_into_map([String.t()], [String.t()]) :: [%{key: String.t()}]
