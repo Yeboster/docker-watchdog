@@ -8,7 +8,31 @@ defmodule Docker do
   """
   @spec compose_all_scrapes() :: [%{key: String.t()}]
   def compose_all_scrapes() do
-    scrape_ps()
+    containers = scrape_ps()
+    stats = scrape_stats()
+
+    Enum.map(containers, fn container ->
+      update_stats = fn container ->
+        container_stats = Enum.find(stats, fn %{"id" => id} -> id == container["id"] end)
+        %{container | "statistics" => container_stats}
+      end
+
+      update_network = fn container ->
+        network_info = scrape_ip_addr(container["id"])
+        %{container | "networks" => network_info}
+      end
+
+      is_running? = container["status"] |> String.downcase() |> String.contains?("up")
+
+      if is_running? do
+        # Adding statistics and network information
+        Map.merge(container, %{"statistics" => %{}, "networks" => []})
+        |> update_stats.()
+        |> update_network.()
+      else
+        container
+      end
+    end)
   end
 
   @doc """
@@ -49,16 +73,29 @@ defmodule Docker do
   """
   @spec scrape_ps() :: [%{key: String.t()}]
   def scrape_ps() do
-    {output, 0} = cmd_docker(["ps", "-a"])
+    case cmd_docker(["ps", "-a"]) do
+      {output, 0} ->
+        scrape_ps(output)
 
-    scrape_ps(output)
+      {error, status_code} ->
+        [%{"error" => error, "status_code" => status_code}]
+    end
   end
 
   @doc """
   Scrape docker stat row into a map type
   """
   def scrape_stats(values) when is_list(values) and length(values) == 8 do
-    stats_keys = ["id", "name", "cpu", "memory", "memory_percentage", "net_io", "block_io", "pids"]
+    stats_keys = [
+      "id",
+      "name",
+      "cpu",
+      "memory",
+      "memory_percentage",
+      "net_io",
+      "block_io",
+      "pids"
+    ]
 
     lists_into_map(stats_keys, values)
   end
@@ -82,9 +119,13 @@ defmodule Docker do
   """
   @spec scrape_stats() :: [%{key: String.t()}]
   def scrape_stats() do
-    {output, 0} = cmd_docker(["stats", "--no-stream"])
+    case cmd_docker(["stats", "--no-stream"]) do
+      {output, 0} ->
+        scrape_stats(output)
 
-    scrape_stats(output)
+      {error, status_code} ->
+        [%{"error" => error, "status_code" => status_code}]
+    end
   end
 
   def scrape_ip_addr(network_json) when is_map(network_json) do
@@ -93,11 +134,18 @@ defmodule Docker do
   end
 
   def scrape_ip_addr(container_id) when is_bitstring(container_id) do
-    sanitized = String.replace(container_id, Regex.compile!("[^a-z|A-Z|_]"), "")
+    sanitized = String.replace(container_id, Regex.compile!("[^a-z|A-Z|0-9|_|-]"), "")
 
-    {output, 0} = cmd_docker(["inspect", "-f", "'{{json .NetworkSettings.Networks}}'", sanitized])
+    case cmd_docker(["inspect", "-f", "'{{json .NetworkSettings.Networks}}'", sanitized]) do
+      {output, 0} ->
+        output
+        |> String.replace(Regex.compile!("('|\\n)"), "")
+        |> Jason.decode!()
+        |> scrape_ip_addr()
 
-    Jason.decode!(output)
+      {error, status_code} ->
+        %{"error" => error, "status_code" => status_code}
+    end
   end
 
   @doc """
