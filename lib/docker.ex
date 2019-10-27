@@ -15,7 +15,7 @@ defmodule Docker do
   Scrape the docker ps row of a container with 7 values (including ports)
   """
   def scrape_ps(row) when is_list(row) and length(row) == 7 do
-    container_keys = [:id, :image, :command, :created, :status, :ports, :names]
+    container_keys = ["id", "image", "command", "created", "status", "ports", "names"]
 
     lists_into_map(container_keys, row)
   end
@@ -24,10 +24,10 @@ defmodule Docker do
   Scrape the docker ps row of a container with 6 values (EXCLUDING ports)
   """
   def scrape_ps(row) when is_list(row) and length(row) == 6 do
-    container_keys = [:id, :image, :command, :created, :status, :names]
+    container_keys = ["id", "image", "command", "created", "status", "names"]
 
     lists_into_map(container_keys, row)
-    |> Map.merge(%{port: ""})
+    |> Map.merge(%{"port" => ""})
   end
 
   @doc """
@@ -58,7 +58,7 @@ defmodule Docker do
   Scrape docker stat row into a map type
   """
   def scrape_stats(values) when is_list(values) and length(values) == 8 do
-    stats_keys = [:id, :name, :cpu, :memory, :memory_percentage, :net_io, :block_io, :pids]
+    stats_keys = ["id", "name", "cpu", "memory", "memory_percentage", "net_io", "block_io", "pids"]
 
     lists_into_map(stats_keys, values)
   end
@@ -108,7 +108,6 @@ defmodule Docker do
     Enum.map(container_ids, fn id -> scrape_ip_addr(id) end)
   end
 
-  @spec lists_into_map([String.t()], [String.t()]) :: [%{key: String.t()}]
   defp lists_into_map(keys, values) when is_list(keys) and is_list(values) do
     Stream.zip(keys, values)
     |> Enum.into(%{}, fn {key, value} -> {key, String.trim(value)} end)
