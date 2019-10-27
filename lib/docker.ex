@@ -34,13 +34,10 @@ defmodule Docker do
   Scrape the input as the docker ps command output
   """
   def scrape_ps(output) when is_bitstring(output) do
-    lines =
-      String.split(output, "\n")
-      |> List.delete_at(0)
-      |> Enum.filter(&str_not_empty?/1)
-
-    # Using stream since it's lazy
-    Stream.map(lines, fn line ->
+    String.split(output, "\n")
+    |> List.delete_at(0)
+    |> Enum.filter(&str_not_empty?/1)
+    |> Stream.map(fn line ->
       String.split(line, "  ")
       |> Enum.filter(&str_not_empty?/1)
     end)
