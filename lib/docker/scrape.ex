@@ -1,4 +1,4 @@
-defmodule Scrape do
+defmodule Docker.Scrape do
   @moduledoc """
   Module that interact with Docker with some commands and parses them into Map type
   """
