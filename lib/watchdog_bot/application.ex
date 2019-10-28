@@ -15,8 +15,8 @@ defmodule WatchdogBot.Application do
       # This will setup the Registry.ExGram
       ExGram,
       # Setup Telegram bot
-      {WatchdogBot.Bot, [method: :polling, token: token]}
-      # {Main.Repo, []} # Setup main Postgres database
+      {WatchdogBot.Bot, [method: :polling, token: token]},
+      {Database.Repo, []} # Setup main Postgres database
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
