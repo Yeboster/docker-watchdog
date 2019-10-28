@@ -1,8 +1,8 @@
-defmodule Database.Repo.Migrations.CreateContainers do
+defmodule Docker.Repo.Migrations.CreateContainers do
   use Ecto.Migration
 
   def change do
-    create table(:container) do
+    create table(:containers) do
       add :container_id, :string
       add :image, :string
       add :command, :string
