@@ -1,6 +1,11 @@
 FROM elixir:1.9.2-alpine
 
-MAINTAINER Yeboster <yeboster@gmail.com>
+ENV TG_TOK=Invalid
+ENV PG_DB=watchdog_docker
+ENV PG_USER=postgres
+ENV PG_PASS=
+ENV PG_HOSTNAME=localhost
+ENV PG_PORT=5432
 
 WORKDIR /usr/src/app/
 

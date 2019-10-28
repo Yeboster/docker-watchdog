@@ -6,16 +6,13 @@ defmodule WatchdogBot.Application do
   use Application
 
   def start(_type, _args) do
-    # TODO: Remove and use secrets or env
-    token = '827073286:AAG3xN8YwfnVodARREgoSzepJ1nAufrND4M'
-
     children = [
       # Starts a worker by calling: WatchdogBot.Worker.start_link(arg)
       # {WatchdogBot.Worker, arg}
       # This will setup the Registry.ExGram
       # ExGram,
       # Setup Telegram bot
-      # {WatchdogBot.Bot, [method: :polling, token: token]},
+      # {WatchdogBot.Bot, [method: :polling, token: Application.get_env(:watchdog_bot, :telegram_token)]},
       # Setup Docker database
       {Docker.Repo, []},
       # Runner to insert docker ps data into db
