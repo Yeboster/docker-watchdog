@@ -24,3 +24,5 @@ watchdog_bot-*.tar
 
 # Ignore tags files
 tags
+# Ignore language server
+.elixir_ls/

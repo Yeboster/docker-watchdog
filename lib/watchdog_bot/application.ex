@@ -6,13 +6,23 @@ defmodule WatchdogBot.Application do
   use Application
 
   def start(_type, _args) do
-    token = '827073286:AAG3xN8YwfnVodARREgoSzepJ1nAufrND4M' # TODO: Remove and use secrets or env
+    # TODO: Remove and use secrets or env
+    token = '827073286:AAG3xN8YwfnVodARREgoSzepJ1nAufrND4M'
+
     children = [
       # Starts a worker by calling: WatchdogBot.Worker.start_link(arg)
       # {WatchdogBot.Worker, arg}
-      ExGram, # This will setup the Registry.ExGram
-      {WatchdogBot.Bot, [method: :polling, token: token]}, # Setup Telegram bot
-      {Main.Repo, []} # Setup main Postgres database
+      # This will setup the Registry.ExGram
+      # ExGram,
+      # Setup Telegram bot
+      # {WatchdogBot.Bot, [method: :polling, token: token]},
+      # Setup Docker database
+      {Docker.Repo, []},
+      # Runner to insert docker ps data into db
+      %{
+        id: "docker_ps",
+        start: {SchedEx, :run_every, [Docker.Runner, :insert_docker_ps, [], "*/1 * * * *"]}
+      }
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
