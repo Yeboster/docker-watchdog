@@ -1,4 +1,4 @@
-defmodule Docker do
+defmodule Scrape do
   @moduledoc """
   Module that interact with Docker with some commands and parses them into Map type
   """
@@ -6,10 +6,10 @@ defmodule Docker do
   @doc """
   Calls all three scrape functions and compose a single list with all features
   """
-  @spec compose_all_scrapes() :: [%{key: String.t()}]
-  def compose_all_scrapes() do
-    containers = scrape_ps()
-    stats = scrape_stats()
+  @spec compose_all() :: [%{key: String.t()}]
+  def compose_all() do
+    containers = docker_ps()
+    stats = docker_stats()
 
     Enum.map(containers, fn container ->
       update_stats = fn container ->
@@ -18,7 +18,7 @@ defmodule Docker do
       end
 
       update_network = fn container ->
-        network_info = scrape_ip_addr(container["id"])
+        network_info = docker_container_ip(container["id"])
         %{container | "networks" => network_info}
       end
 
@@ -38,7 +38,7 @@ defmodule Docker do
   @doc """
   Scrape the docker ps row of a container with 7 values (including ports)
   """
-  def scrape_ps(row) when is_list(row) and length(row) == 7 do
+  def docker_ps(row) when is_list(row) and length(row) == 7 do
     container_keys = ["id", "image", "command", "created", "status", "ports", "names"]
 
     lists_into_map(container_keys, row)
@@ -47,7 +47,7 @@ defmodule Docker do
   @doc """
   Scrape the docker ps row of a container with 6 values (EXCLUDING ports)
   """
-  def scrape_ps(row) when is_list(row) and length(row) == 6 do
+  def docker_ps(row) when is_list(row) and length(row) == 6 do
     container_keys = ["id", "image", "command", "created", "status", "names"]
 
     lists_into_map(container_keys, row)
@@ -57,7 +57,7 @@ defmodule Docker do
   @doc """
   Scrape the input as the docker ps command output
   """
-  def scrape_ps(output) when is_bitstring(output) do
+  def docker_ps(output) when is_bitstring(output) do
     String.split(output, "\n")
     |> List.delete_at(0)
     |> Enum.filter(&str_not_empty?/1)
@@ -65,17 +65,17 @@ defmodule Docker do
       String.split(line, "  ")
       |> Enum.filter(&str_not_empty?/1)
     end)
-    |> Enum.map(&scrape_ps/1)
+    |> Enum.map(&docker_ps/1)
   end
 
   @doc """
   Scrape the docker ps command and return a Map type
   """
-  @spec scrape_ps() :: [%{key: String.t()}]
-  def scrape_ps() do
+  @spec docker_ps() :: [%{key: String.t()}]
+  def docker_ps() do
     case cmd_docker(["ps", "-a"]) do
       {output, 0} ->
-        scrape_ps(output)
+        docker_ps(output)
 
       {error, status_code} ->
         [%{"error" => error, "status_code" => status_code}]
@@ -85,7 +85,7 @@ defmodule Docker do
   @doc """
   Scrape docker stat row into a map type
   """
-  def scrape_stats(values) when is_list(values) and length(values) == 8 do
+  def docker_stats(values) when is_list(values) and length(values) == 8 do
     stats_keys = [
       "id",
       "name",
@@ -103,7 +103,7 @@ defmodule Docker do
   @doc """
   Scrape docker stat command output into a list containing map type
   """
-  def scrape_stats(output) when is_bitstring(output) do
+  def docker_stats(output) when is_bitstring(output) do
     String.split(output, "\n")
     |> List.delete_at(0)
     |> Stream.filter(&str_not_empty?/1)
@@ -111,29 +111,29 @@ defmodule Docker do
       String.split(line, "  ")
       |> Enum.filter(&str_not_empty?/1)
     end)
-    |> Enum.map(&scrape_stats/1)
+    |> Enum.map(&docker_stats/1)
   end
 
   @doc """
   Scrape docker stat command calling it into the shell
   """
-  @spec scrape_stats() :: [%{key: String.t()}]
-  def scrape_stats() do
+  @spec docker_stats() :: [%{key: String.t()}]
+  def docker_stats() do
     case cmd_docker(["stats", "--no-stream"]) do
       {output, 0} ->
-        scrape_stats(output)
+        docker_stats(output)
 
       {error, status_code} ->
         [%{"error" => error, "status_code" => status_code}]
     end
   end
 
-  def scrape_ip_addr(network_json) when is_map(network_json) do
+  def docker_container_ip(network_json) when is_map(network_json) do
     Map.to_list(network_json)
     |> Enum.map(fn {key, value} -> %{key => "#{value["IPAddress"]}/#{value["IPPrefixLen"]}"} end)
   end
 
-  def scrape_ip_addr(container_id) when is_bitstring(container_id) do
+  def docker_container_ip(container_id) when is_bitstring(container_id) do
     sanitized = String.replace(container_id, Regex.compile!("[^a-z|A-Z|0-9|_|-]"), "")
 
     case cmd_docker(["inspect", "-f", "'{{json .NetworkSettings.Networks}}'", sanitized]) do
@@ -141,7 +141,7 @@ defmodule Docker do
         output
         |> String.replace(Regex.compile!("('|\\n)"), "")
         |> Jason.decode!()
-        |> scrape_ip_addr()
+        |> docker_container_ip
 
       {error, status_code} ->
         %{"error" => error, "status_code" => status_code}
@@ -151,9 +151,9 @@ defmodule Docker do
   @doc """
   Scrape each conainer id and return its Ip address and subnet mask
   """
-  @spec scrape_ip_addr([String.t()]) :: [%{key: String.t()}]
-  def scrape_ip_addr(container_ids) when is_list(container_ids) do
-    Enum.map(container_ids, fn id -> scrape_ip_addr(id) end)
+  @spec docker_container_ip([String.t()]) :: [%{key: String.t()}]
+  def docker_container_ip(container_ids) when is_list(container_ids) do
+    Enum.map(container_ids, fn id -> docker_container_ip(id) end)
   end
 
   defp lists_into_map(keys, values) when is_list(keys) and is_list(values) do
