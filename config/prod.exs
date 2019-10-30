@@ -1,10 +1,9 @@
-use Mix.Config
 
-config :watchdog_bot, ecto_repos: [Docker.Repo]
+import Config
 
 config :watchdog_bot, Docker.Repo,
-  database: System.fetch_env!("PG_DB"),
-  username: System.fetch_env!("PG_USER"),
-  password: System.fetch_env!("PG_PASS"),
-  hostname: System.fetch_env!("PG_HOST"),
-  port: System.fetch_env!("PG_PORT")
+  database: "${PG_DB}",
+  username: "${PG_USER}",
+  password: "${PG_PASS}",
+  hostname: "${PG_HOST}",
+  port: 5432
