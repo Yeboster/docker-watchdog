@@ -28,7 +28,8 @@ defmodule WatchdogBot.MixProject do
       {:jason, ">= 1.0.0"},
       {:ecto_sql, "~> 3.0"},
       {:postgrex, ">= 0.0.0"},
-      {:sched_ex, "~> 1.1.1"}
+      {:sched_ex, "~> 1.1.1"},
+      {:distillery, "~> 2.1"}
     ]
   end
 end
