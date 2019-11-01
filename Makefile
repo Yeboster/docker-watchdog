@@ -10,9 +10,18 @@ help:
 
 
 build: ## Build the Docker image
-		sudo docker-compose build --no-cache \
-        --build-arg APP_NAME=$(APP_NAME) \
-        --build-arg APP_VSN=$(APP_VSN)
+	podman build -t $(APP_NAME):latest -f ./Dockerfile \
+		--build-arg APP_NAME=$(APP_NAME) \
+		--build-arg APP_VSN=$(APP_VSN)
 
-run: ## Run the app in Docker
-		sudo docker-compose up -d
+up: ## Run the app in Docker
+		podman-compose up -d
+
+down: ## Stop the container
+		podman-compose down 
+
+console: ## Open the console
+		podman run --rm -it $(APP_NAME) /opt/app/bin/$(APP_NAME) console
+
+env-vars:
+		export PG_DB=watchdog_bot PG_USER=postgres PG_PASS=postgres PG_HOST=172.22.4.2
