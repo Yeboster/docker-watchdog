@@ -9,6 +9,7 @@ defmodule Docker.Container do
     field(:container_created_at, :string)
     field(:port, :string)
     field(:status, :string)
+    field(:inserted_at, :string)
   end
 
   def changeset(container, params \\ %{}) do
@@ -19,7 +20,8 @@ defmodule Docker.Container do
       :name,
       :container_created_at,
       :port,
-      :status
+      :status,
+      :inserted_at
     ]
 
     container
@@ -28,6 +30,8 @@ defmodule Docker.Container do
   end
 
   def from_map(map) when is_map(map) do
+    {:ok, datetime} = DateTime.now("Etc/UTC")
+
     container_opts = %{
       container_id: map["id"],
       image: map["image"],
@@ -35,7 +39,8 @@ defmodule Docker.Container do
       name: map["names"],
       container_created_at: map["created"],
       port: map["port"],
-      status: map["status"]
+      status: map["status"],
+      inserted_at: DateTime.to_string(datetime)
     }
 
     Docker.Container.changeset(%Docker.Container{}, container_opts)
