@@ -39,7 +39,24 @@ environment :prod do
   set include_src: false
   set cookie: :"0Ln||%9KfG=xTEZJEwCb$6XmD?)]w&p6[eCkVwZE8j5GE>BGnKX=N&:b.Rey=M[&"
   set vm_args: "rel/vm.args"
+  set config_providers: [
+    {Distillery.Releases.Config.Providers.Elixir, ["${RELEASE_ROOT_DIR}/etc/config.exs"]}
+  ]
+  set overlays: [
+    {:copy, "rel/config/config.exs", "etc/config.exs"}
+  ]
 end
+
+
+release :watchdog_bot do
+  set config_providers: [
+    {Distillery.Releases.Config.Providers.Elixir, ["${RELEASE_ROOT_DIR}/etc/config.exs"]}
+  ]
+  set overlays: [
+    {:copy, "rel/config/config.exs", "etc/config.exs"}
+  ]
+end
+
 
 # You may define one or more releases in this file.
 # If you have not set a default release, or selected one
