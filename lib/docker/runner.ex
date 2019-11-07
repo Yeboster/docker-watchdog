@@ -28,6 +28,7 @@ defmodule Docker.Runner do
 
         if latest.status != older.status do
           # Alert the channel
+          Docker.Alert.inform_of(latest)
         end
       end
     end)
