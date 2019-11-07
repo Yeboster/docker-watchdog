@@ -10,15 +10,23 @@ defmodule WatchdogBot.Application do
       # Starts a worker by calling: WatchdogBot.Worker.start_link(arg)
       # {WatchdogBot.Worker, arg}
       # This will setup the Registry.ExGram
-      # ExGram,
+      ExGram,
       # Setup Telegram bot
-      # {WatchdogBot.Bot, [method: :polling, token: Application.get_env(:watchdog_bot, :telegram_token)]},
+      {WatchdogBot.Bot,
+       [method: :polling]},
       # Setup Docker database
       {Docker.Repo, []},
       # Runner to insert docker ps data into db
+      # Every two minutes
       %{
         id: "docker_ps",
-        start: {SchedEx, :run_every, [Docker.Runner, :insert_docker_ps, [], "*/1 * * * *"]}
+        start: {SchedEx, :run_every, [Docker.Runner, :insert_docker_ps, [], "*/2 * * * *"]}
+      },
+      # Every minute
+      %{
+        id: "docker_monitor_status",
+        start:
+          {SchedEx, :run_every, [Docker.Runner, :monitor_container_status, [], "*/1 * * * *"]}
       }
     ]
 
