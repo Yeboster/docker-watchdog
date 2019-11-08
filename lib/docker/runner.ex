@@ -27,13 +27,8 @@ defmodule Docker.Runner do
         latest = List.first(status)
         older = List.last(status)
 
-        if latest.status != older.status && latest.alerted == false do
-          # Alert the channel
-          Logger.info("""
-          Alerting different status container (container_id: #{latest.container_id}, container_name: #{
-            latest.name
-          })!
-          """)
+        if latest.status != older.status && latest.alerted != true do
+          IO.puts("Alert id: #{latest.container_id}")
 
           # TODO: manage and log if the alert has not been sent!
           Docker.Alert.inform_of(latest)
