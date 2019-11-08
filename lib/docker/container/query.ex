@@ -36,8 +36,7 @@ defmodule Docker.Container.Query do
   Set to true the alert flag on container map
   """
   def alerted!(map) when is_map(map) do
-    %{map | alerted: true}
-    |> Docker.Container.changeset()
-    |> Docker.Repo.insert!()
+    Docker.Container.changeset(map, %{alerted: true})
+    |> Docker.Repo.update!()
   end
 end

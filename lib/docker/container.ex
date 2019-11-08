@@ -28,9 +28,11 @@ defmodule Docker.Container do
 
     container
     |> Ecto.Changeset.cast(params, permitted_params)
-    |> Ecto.Changeset.validate_required(Enum.filter(permitted_params, fn param -> 
-      param != :port || param != :alerted
-    end))
+    |> Ecto.Changeset.validate_required(
+      Enum.filter(permitted_params, fn param when is_atom(param) ->
+        param != :port and param != :alerted
+      end)
+    )
   end
 
   def from_map(map) when is_map(map) do

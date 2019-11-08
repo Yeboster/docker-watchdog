@@ -14,6 +14,15 @@ defmodule Docker.Runner do
     end)
   end
 
+  def test() do
+    ContainerQuery.bad_status_containers()
+    |> Enum.map(fn id ->
+        ContainerQuery.ordered_from_id(id)
+        |> ContainerQuery.with_limit(2)
+        |> Repo.all()
+    end)
+    
+  end
   def monitor_container_status() do
     ContainerQuery.bad_status_containers()
     |> Enum.each(fn id ->
