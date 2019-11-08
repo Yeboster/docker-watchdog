@@ -1,5 +1,6 @@
 defmodule Docker.Container.Query do
   import Ecto.Query, only: [from: 2, limit: 2]
+
   @doc """
   Returns all containers with bad status
   """
@@ -28,5 +29,15 @@ defmodule Docker.Container.Query do
   """
   def with_limit(query, num) when is_integer(num) do
     query |> limit(^num)
+  end
+
+  # TODO: Change is_map to is_container_map
+  @doc """
+  Set to true the alert flag on container map
+  """
+  def alerted!(map) when is_map(map) do
+    %{map | alerted: true}
+    |> Docker.Container.changeset()
+    |> Docker.Repo.insert!()
   end
 end

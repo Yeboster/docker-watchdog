@@ -1,4 +1,5 @@
 defmodule Docker.Runner do
+  require Logger
   alias Docker.Container.Query, as: ContainerQuery
   alias Docker.Repo, as: Repo
 
@@ -26,9 +27,12 @@ defmodule Docker.Runner do
         latest = List.first(status)
         older = List.last(status)
 
-        if latest.status != older.status do
-          # Alert the channel
+        if latest.status != older.status && latest.alerted != true do
+          IO.puts("Alert id: #{latest.container_id}")
+
+          # TODO: manage and log if the alert has not been sent!
           Docker.Alert.inform_of(latest)
+          ContainerQuery.alerted!(latest)
         end
       end
     end)
