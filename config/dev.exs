@@ -4,5 +4,5 @@ config :watchdog_bot, Docker.Repo,
   database: "watchdog_docker",
   username: "postgres",
   password: "postgres",
-  hostname: "172.22.4.2",
-  port: "5432"
+  hostname: "127.0.0.1",
+  port: 5432
