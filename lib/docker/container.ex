@@ -40,7 +40,7 @@ defmodule Docker.Container do
       container_created_at: map["created"],
       port: map["port"],
       status: map["status"],
-      inserted_at: DateTime.to_string(datetime)
+      inserted_at: datetime
     }
 
     Docker.Container.changeset(%Docker.Container{}, container_opts)
