@@ -8,7 +8,7 @@ defmodule Docker.Container.Query do
     from(c in Docker.Container,
       select: c.container_id,
       group_by: c.container_id,
-      where: c.status |> like("exit%")
+      where: fragment("lower(?)", c.status) |> like("exit%")
     )
     |> Docker.Repo.all()
   end
