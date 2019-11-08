@@ -1,4 +1,5 @@
 defmodule Docker.Runner do
+  require Logger
   alias Docker.Container.Query, as: ContainerQuery
   alias Docker.Repo, as: Repo
 
@@ -13,6 +14,15 @@ defmodule Docker.Runner do
     end)
   end
 
+  def test() do
+    ContainerQuery.bad_status_containers()
+    |> Enum.map(fn id ->
+        ContainerQuery.ordered_from_id(id)
+        |> ContainerQuery.with_limit(2)
+        |> Repo.all()
+    end)
+    
+  end
   def monitor_container_status() do
     ContainerQuery.bad_status_containers()
     |> Enum.each(fn id ->
@@ -26,9 +36,12 @@ defmodule Docker.Runner do
         latest = List.first(status)
         older = List.last(status)
 
-        if latest.status != older.status do
-          # Alert the channel
+        if latest.status != older.status && latest.alerted != true do
+          IO.puts("Alert id: #{latest.container_id}")
+
+          # TODO: manage and log if the alert has not been sent!
           Docker.Alert.inform_of(latest)
+          ContainerQuery.alerted!(latest)
         end
       end
     end)
