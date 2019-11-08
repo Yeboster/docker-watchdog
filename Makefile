@@ -14,5 +14,14 @@ build: ## Build the Docker image
         --build-arg APP_NAME=$(APP_NAME) \
         --build-arg APP_VSN=$(APP_VSN)
 
-run: ## Run the app in Docker
+up: ## Run the app in Docker
 		sudo docker-compose up -d
+
+down: ## Stop the container
+		sudo docker-compose down 
+
+console: ## Open the console
+		sudo docker run --rm -it watchdog /opt/app/bin/$(APP_NAME) console
+
+env-vars:
+		export PG_DB=watchdog_bot PG_USER=postgres PG_PASS=postgres PG_HOST=postgres

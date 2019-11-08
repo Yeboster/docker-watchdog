@@ -1,7 +1,10 @@
-import Config
+use Mix.Config
 
-config :watchdog_bot, telegram_token: "${TG_TOK}"
+config :ex_gram, token: System.get_env("TG_TOK")
+config :watchdog_bot, telegram_channel_id: -1001275098496
 
 config :watchdog_bot, ecto_repos: [Docker.Repo]
 
-import_config "#{Mix.env()}.exs"
+if Mix.env == "dev" do
+  import_config "dev.exs"
+end

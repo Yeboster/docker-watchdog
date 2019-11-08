@@ -1,8 +1,9 @@
 version: "3.2"
 
 services:
-  watchdog_docker:
+  watchdog:
     build: .
+    image: watchdog_bot:latest
     restart: always
     volumes:
       - type: bind
