@@ -10,6 +10,7 @@ defmodule Docker.Container do
     field(:port, :string)
     field(:status, :string)
     field(:inserted_at, :utc_datetime)
+    field(:alerted, :boolean)
   end
 
   def changeset(container, params \\ %{}) do
@@ -21,12 +22,15 @@ defmodule Docker.Container do
       :container_created_at,
       :port,
       :status,
-      :inserted_at
+      :inserted_at,
+      :alerted
     ]
 
     container
     |> Ecto.Changeset.cast(params, permitted_params)
-    |> Ecto.Changeset.validate_required(Enum.filter(permitted_params, &(&1 != :port)))
+    |> Ecto.Changeset.validate_required(Enum.filter(permitted_params, fn param -> 
+      param != :port || param != :alerted
+    end))
   end
 
   def from_map(map) when is_map(map) do
