@@ -9,7 +9,7 @@ defmodule Docker.Container do
     field(:container_created_at, :string)
     field(:port, :string)
     field(:status, :string)
-    field(:inserted_at, :string)
+    field(:inserted_at, :utc_datetime)
   end
 
   def changeset(container, params \\ %{}) do
