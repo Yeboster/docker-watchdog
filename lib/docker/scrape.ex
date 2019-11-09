@@ -164,7 +164,7 @@ defmodule Docker.Scrape do
 
   defp add_running_status(map) when is_map(map) do
     is_running =
-      map.status
+      map["status"]
       |> String.downcase()
       |> String.contains?("exit")
 
