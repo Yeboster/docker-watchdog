@@ -8,6 +8,7 @@ defmodule Docker.Container do
     field(:name, :string)
     field(:container_created_at, :string)
     field(:port, :string)
+    field(:up, :boolean)
     field(:status, :string)
     field(:inserted_at, :utc_datetime)
     field(:alerted, :boolean)
@@ -21,6 +22,7 @@ defmodule Docker.Container do
       :name,
       :container_created_at,
       :port,
+      :up,
       :status,
       :inserted_at,
       :alerted
@@ -45,6 +47,7 @@ defmodule Docker.Container do
       name: map["names"],
       container_created_at: map["created"],
       port: map["port"],
+      up: map["up"],
       status: map["status"],
       inserted_at: datetime
     }
