@@ -3,7 +3,7 @@ defmodule Docker.Repo.Migrations.ImproveStatusData do
 
   def change do
     alter table(:containers) do
-      add :up, :boolean, default: false
+      add :running, :boolean, default: false
     end
   end
 end
