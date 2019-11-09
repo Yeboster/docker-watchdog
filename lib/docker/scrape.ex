@@ -42,6 +42,7 @@ defmodule Docker.Scrape do
     container_keys = ["id", "image", "command", "created", "status", "ports", "names"]
 
     lists_into_map(container_keys, row)
+    |> add_up_status()
   end
 
   @doc """
@@ -52,6 +53,7 @@ defmodule Docker.Scrape do
 
     lists_into_map(container_keys, row)
     |> Map.merge(%{"port" => ""})
+    |> add_up_status()
   end
 
   @doc """
@@ -159,6 +161,15 @@ defmodule Docker.Scrape do
   defp lists_into_map(keys, values) when is_list(keys) and is_list(values) do
     Stream.zip(keys, values)
     |> Enum.into(%{}, fn {key, value} -> {key, String.trim(value)} end)
+  end
+
+  defp add_up_status(map) when is_map(map) do
+    up =
+      map.status
+      |> String.downcase()
+      |> String.contains?("exit")
+
+    Map.put(map, "up", up)
   end
 
   defp str_not_empty?(str) when is_bitstring(str) do
