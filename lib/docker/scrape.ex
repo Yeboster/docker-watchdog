@@ -166,7 +166,7 @@ defmodule Docker.Scrape do
     is_running =
       map["status"]
       |> String.downcase()
-      |> String.contains?("exit")
+      |> String.contains?("up")
 
     Map.put(map, "running", is_running)
   end
