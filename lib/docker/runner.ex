@@ -36,7 +36,7 @@ defmodule Docker.Runner do
         latest = List.first(status)
         older = List.last(status)
 
-        if latest.status != older.status && latest.alerted != true do
+        if latest.running != older.running && latest.alerted != true do
           IO.puts("Alert id: #{latest.container_id}")
 
           # TODO: manage and log if the alert has not been sent!
