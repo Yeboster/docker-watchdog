@@ -16,7 +16,7 @@ services:
       PG_PASS: ${PG_PASS}
       PG_HOST: ${PG_HOST}
     networks:
-      - postgres_net
+      - db_postgres_net
     logging:
         driver: "fluentd"
         options:
@@ -26,5 +26,5 @@ services:
 
 
 networks:
-  postgres_net:
+  db_postgres_net:
     external: true
