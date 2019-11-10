@@ -12,8 +12,7 @@ defmodule WatchdogBot.Application do
       # This will setup the Registry.ExGram
       ExGram,
       # Setup Telegram bot
-      {WatchdogBot.Bot,
-       [method: :polling]},
+      {WatchdogBot.Bot, [method: :polling, token: Application.get_env(:ex_gram, :token)]},
       # Setup Docker database
       {Docker.Repo, []},
       # Runner to insert docker ps data into db
