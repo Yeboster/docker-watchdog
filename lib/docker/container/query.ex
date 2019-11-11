@@ -1,6 +1,13 @@
 defmodule Docker.Container.Query do
   import Ecto.Query, only: [from: 2, limit: 2]
 
+  def unique_containers() do
+    from(c in Docker.Container,
+      select: [c.container_id, c.image, c.name, c.port],
+      group_by: [c.container_id, c.image, c.name, c.port]
+      )
+  end
+
   @doc """
   Returns all containers with bad status
   """
