@@ -26,4 +26,24 @@ defmodule WatchdogBot.Bot do
   def authenticated({:command, "start", _msg}, context) do
     answer(context, "Conquer the world!")
   end
+
+  def authenticated({:command, "containers", msg}, context) do
+    keyboard =
+      Docker.Container.Query.unique_containers()
+      |> Docker.Repo.all()
+      |> Enum.map(fn [id, _, name, _] ->
+        [
+          %ExGram.Model.KeyboardButton{
+            text: "#{name}(#{id})"
+          }
+        ]
+      end)
+
+    ExGram.send_message(msg[:from][:id], "What is the container you want ?",
+      reply_markup: %ExGram.Model.ReplyKeyboardMarkup{
+        resize_keyboard: true,
+        keyboard: keyboard
+      }
+    )
+  end
 end
