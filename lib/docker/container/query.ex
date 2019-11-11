@@ -5,7 +5,7 @@ defmodule Docker.Container.Query do
     from(c in Docker.Container,
       select: [c.container_id, c.image, c.name, c.port],
       group_by: [c.container_id, c.image, c.name, c.port]
-      )
+    )
   end
 
   @doc """
@@ -29,6 +29,14 @@ defmodule Docker.Container.Query do
       where: c.container_id == ^id,
       order_by: [desc: c.inserted_at]
     )
+  end
+
+  @doc """
+  Return the most recent container row
+  """
+  def last_from_id(id) when is_bitstring(id) do
+    ordered_from_id(id)
+    |> with_limit(1)
   end
 
   @doc """
