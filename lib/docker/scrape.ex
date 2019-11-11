@@ -22,9 +22,8 @@ defmodule Docker.Scrape do
         %{container | "networks" => network_info}
       end
 
-      is_running? = container["status"] |> String.downcase() |> String.contains?("up")
 
-      if is_running? do
+      if container["running"] do
         # Adding statistics and network information
         Map.merge(container, %{"statistics" => %{}, "networks" => []})
         |> update_stats.()
@@ -42,6 +41,7 @@ defmodule Docker.Scrape do
     container_keys = ["id", "image", "command", "created", "status", "ports", "names"]
 
     lists_into_map(container_keys, row)
+    |> add_running_status()
   end
 
   @doc """
@@ -52,6 +52,7 @@ defmodule Docker.Scrape do
 
     lists_into_map(container_keys, row)
     |> Map.merge(%{"port" => ""})
+    |> add_running_status()
   end
 
   @doc """
@@ -159,6 +160,15 @@ defmodule Docker.Scrape do
   defp lists_into_map(keys, values) when is_list(keys) and is_list(values) do
     Stream.zip(keys, values)
     |> Enum.into(%{}, fn {key, value} -> {key, String.trim(value)} end)
+  end
+
+  defp add_running_status(map) when is_map(map) do
+    is_running =
+      map["status"]
+      |> String.downcase()
+      |> String.contains?("up")
+
+    Map.put(map, "running", is_running)
   end
 
   defp str_not_empty?(str) when is_bitstring(str) do
