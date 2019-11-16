@@ -17,6 +17,8 @@ defmodule Docker.Runner do
   def monitor_container_status() do
     ContainerQuery.bad_status_containers()
     |> Enum.each(fn id ->
+      Logger.info("Checking status of container (id: #{id})")
+
       status =
         ContainerQuery.ordered_from_id(id)
         |> ContainerQuery.with_limit(2)
@@ -28,7 +30,9 @@ defmodule Docker.Runner do
         older = List.last(status)
 
         if latest.running != older.running && latest.alerted != true do
-          IO.puts("Alert id: #{latest.container_id}")
+          Logger.warn(
+            "Alerting to channel container (id: #{latest.container_id}, name: #{latest.name})"
+          )
 
           # TODO: manage and log if the alert has not been sent!
           Docker.Alert.inform_of(latest)
