@@ -5,12 +5,11 @@ defmodule Docker.Runner do
 
   def insert_docker_ps() do
     Docker.Scrape.docker_ps()
-    |> Enum.map(fn scraped ->
+    |> Enum.each(fn scraped ->
       Docker.Container.from_map(scraped)
       |> Repo.insert!()
 
-      # Change with Logging
-      IO.puts("Data inserted correctly!")
+      Logger.info("Data inserted correctly!")
     end)
   end
 
