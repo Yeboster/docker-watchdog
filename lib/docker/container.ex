@@ -10,7 +10,6 @@ defmodule Docker.Container do
     field(:port, :string)
     field(:running, :boolean)
     field(:status, :string)
-    field(:inserted_at, :utc_datetime)
     field(:alerted, :boolean)
   end
 
@@ -24,7 +23,6 @@ defmodule Docker.Container do
       :port,
       :running,
       :status,
-      :inserted_at,
       :alerted
     ]
 
@@ -38,8 +36,6 @@ defmodule Docker.Container do
   end
 
   def from_map(map) when is_map(map) do
-    {:ok, datetime} = DateTime.now("Etc/UTC")
-
     container_opts = %{
       container_id: map["id"],
       image: map["image"],
@@ -49,7 +45,6 @@ defmodule Docker.Container do
       port: map["port"],
       running: map["running"],
       status: map["status"],
-      inserted_at: datetime
     }
 
     Docker.Container.changeset(%Docker.Container{}, container_opts)
