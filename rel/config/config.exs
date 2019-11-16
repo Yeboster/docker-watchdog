@@ -13,4 +13,5 @@ config :watchdog_bot, Docker.Repo,
   port: 5432
 
 config :logger, :console,
+  level: :info,
   format: "{\"timestamp\":\"$time\", \"level\":\"$level\", \"message\":\"$message\"}\n"
