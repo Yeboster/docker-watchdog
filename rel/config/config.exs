@@ -14,4 +14,4 @@ config :watchdog_bot, Docker.Repo,
 
 config :logger, :console,
   level: :info,
-  format: "{\"timestamp\":\"$time\", \"level\":\"$metadata[$level]\", \"message\":\"$message\"}"
+  format: "{\"timestamp\":\"$time\", \"level\":\"$level\", \"message\":\"$message\"}"
