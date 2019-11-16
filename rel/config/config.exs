@@ -11,3 +11,7 @@ config :watchdog_bot, Docker.Repo,
   password: System.get_env("PG_PASS"),
   hostname: System.get_env("PG_HOST"),
   port: 5432
+
+config :logger, :console,
+  level: :info,
+  format: """{"timestamp":"#{$time}", "level":"#{$metadata[$level]}", "message":"#{$message}"}"""
