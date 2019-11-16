@@ -18,17 +18,16 @@ defmodule WatchdogBot.Application do
       {Docker.Repo, []},
       ###
       # Runner to insert docker ps data into db
-      # Crontab from second to year
       ###
       # Every minute
       %{
         id: "docker_ps",
-        start: {SchedEx, :run_every, [Docker.Runner, :insert_docker_ps, [], "0 * * * * * *"]}
+        start: {SchedEx, :run_every, [Docker.Runner, :insert_docker_ps, [], "* * * * *"]}
       },
-      # Every 30 seconds
+      # Every minute
       %{
         id: "docker_monitor_status",
-        start: {SchedEx, :run_every, [Docker.Runner, :monitor_container_status, [], "*/30 * * * * * *"]}
+        start: {SchedEx, :run_every, [Docker.Runner, :monitor_container_status, [], "* * * * *"]}
       }
     ]
 
