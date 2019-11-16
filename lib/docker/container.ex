@@ -11,6 +11,7 @@ defmodule Docker.Container do
     field(:running, :boolean)
     field(:status, :string)
     field(:alerted, :boolean)
+    timestamps()
   end
 
   def changeset(container, params \\ %{}) do
