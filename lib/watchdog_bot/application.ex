@@ -4,6 +4,7 @@ defmodule WatchdogBot.Application do
   @moduledoc false
 
   use Application
+  require Logger
 
   def start(_type, _args) do
     children = [
@@ -17,16 +18,17 @@ defmodule WatchdogBot.Application do
       {Docker.Repo, []},
       ###
       # Runner to insert docker ps data into db
+      # Crontab from second to year
       ###
       # Every minute
       %{
         id: "docker_ps",
-        start: {SchedEx, :run_every, [Docker.Runner, :insert_docker_ps, [], "* * * * *"]}
+        start: {SchedEx, :run_every, [Docker.Runner, :insert_docker_ps, [], "0 * * * * * *"]}
       },
-      # Every minute
+      # Every 30 seconds
       %{
         id: "docker_monitor_status",
-        start: {SchedEx, :run_every, [Docker.Runner, :monitor_container_status, [], "* * * * *"]}
+        start: {SchedEx, :run_every, [Docker.Runner, :monitor_container_status, [], "*/30 * * * * * *"]}
       }
     ]
 
