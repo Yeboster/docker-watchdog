@@ -15,17 +15,18 @@ defmodule WatchdogBot.Application do
       {WatchdogBot.Bot, [method: :polling, token: Application.get_env(:ex_gram, :token)]},
       # Setup Docker database
       {Docker.Repo, []},
+      ###
       # Runner to insert docker ps data into db
-      # Every two minutes
+      ###
+      # Every minute
       %{
         id: "docker_ps",
-        start: {SchedEx, :run_every, [Docker.Runner, :insert_docker_ps, [], "*/2 * * * *"]}
+        start: {SchedEx, :run_every, [Docker.Runner, :insert_docker_ps, [], "* * * * *"]}
       },
       # Every minute
       %{
         id: "docker_monitor_status",
-        start:
-          {SchedEx, :run_every, [Docker.Runner, :monitor_container_status, [], "*/1 * * * *"]}
+        start: {SchedEx, :run_every, [Docker.Runner, :monitor_container_status, [], "* * * * *"]}
       }
     ]
 
