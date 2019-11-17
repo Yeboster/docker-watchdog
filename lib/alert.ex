@@ -5,14 +5,16 @@ defmodule Docker.Alert do
 
   def inform_of(map) when is_container_map(map) do
     message = """
-    The container *#{map.name}* *#{if map.running, do: "is running", else: "is NOT running"}*.
+    The container <b>#{map.name} #{if map.running, do: "is running", else: "is NOT running"}</b>.
     Useful information:
-    - *id*: #{map.container_id}
-    - *image*: #{map.image}
-    - *command*: `#{map.command}`
-    - *status*: `#{map.status}`
+    - <b>id</b>: <code>#{map.container_id}</code>
+    - <b>image</b>: #{map.image}
+    - <b>command</b>: <code>#{map.command}</code>
+    - <b>status</b>: <code>#{map.status}</code>
     """
 
-    send_markdown(Application.get_env(:watchdog_bot, :telegram_channel_id), message)
+    channel_id = Application.get_env(:watchdog_bot, :telegram_channel_id)
+
+    send_html(channel_id, message)
   end
 end
