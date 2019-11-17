@@ -1,6 +1,8 @@
 defmodule Docker.Alert do
   import Docker.Alert.Utils
 
+  require Logger
+
   defguard is_container_map(map) when is_map(map)
 
   def inform_of(map) when is_container_map(map) do
@@ -13,8 +15,6 @@ defmodule Docker.Alert do
     - <b>status</b>: <code>#{map.status}</code>
     """
 
-    channel_id = Application.get_env(:watchdog_bot, :telegram_channel_id)
-
-    send_html(channel_id, message)
+    send_html(message)
   end
 end
