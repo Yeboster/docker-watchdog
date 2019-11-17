@@ -6,10 +6,17 @@ defmodule Docker.Runner do
   def insert_docker_ps() do
     Docker.Scrape.docker_ps()
     |> Enum.each(fn scraped ->
-      Docker.Container.from_map(scraped)
-      |> Repo.insert!()
+      {status, map} =
+        Docker.Container.from_map(scraped)
+        |> Repo.insert()
 
-      Logger.info("Data inserted correctly!")
+      case status do
+        :ok ->
+          Logger.info("Data inserted for container (id: #{map.container_id})")
+
+        :error ->
+          Logger.error("Data not inserted for container (id: #{map.container_id})")
+      end
     end)
   end
 
