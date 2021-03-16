@@ -1,21 +1,8 @@
-# WatchdogBot
+# Docker WatchdogBot
 
-**TODO: Add description**
+A simple Telegram bot to monitor docker container statistics and receive alerts when containers stop running.
 
-## Installation
+It was made to learn and explore elixir lang.
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `watchdog_bot` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:watchdog_bot, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/watchdog_bot](https://hexdocs.pm/watchdog_bot).
-
+## Deploy
+It can be deployed using docker by running `make up`
